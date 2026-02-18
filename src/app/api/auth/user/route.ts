@@ -1,8 +1,8 @@
 // src/app/api/user/route.ts
 import { NextResponse } from "next/server";
-import { prisma } from "@/server/db";
+import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
 import bcrypt from "bcryptjs";
 
 export async function GET(req: Request) {

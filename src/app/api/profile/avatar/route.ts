@@ -1,9 +1,9 @@
 // src/app/api/profile/avatar/route.ts
 import { NextResponse } from "next/server";
-import { prisma } from "@/server/db";
+import { prisma } from "@/src/server/db";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { cloudinary } from "@/server/cloudinary";
+import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
+import { cloudinary } from "@/src/server/cloudinary";
 import type { UploadApiResponse, UploadApiErrorResponse } from "cloudinary";
 
 export const runtime = "nodejs";
