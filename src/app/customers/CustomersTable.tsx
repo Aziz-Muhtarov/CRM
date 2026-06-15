@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Customer } from "@prisma/client";
 import { deleteCustomer, updateCustomer } from "./actions";
 
@@ -8,6 +9,15 @@ type Props = {
 };
 
 export default function CustomersTable({ customers }: Props) {
+
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+
   if (customers.length === 0) {
     return <p className="text-gray-500">Клиентов пока нет</p>;
   }
@@ -47,14 +57,11 @@ async function handleDelete(id: number) {
               <td className="p-3 text-right">
                 <button
                   onClick={() => {
-                    const name = prompt("Имя", c.name);
-                    if (!name) return;
-
-                    updateCustomer({
-                      id: c.id,
-                      name,
-                      email: c.email || undefined,
-                      phone: c.phone || undefined,
+                    setEditingCustomer(c);
+                    setForm({
+                      name: c.name,
+                      email: c.email || "",
+                      phone: c.phone || "",
                     });
                   }}
                   className="text-blue-500 hover:underline mr-3"
@@ -66,6 +73,62 @@ async function handleDelete(id: number) {
           ))}
         </tbody>
       </table>
+
+            {editingCustomer && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">
+              Редактировать клиента
+            </h2>
+
+            <input
+              value={form.name}
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
+              className="w-full border rounded px-3 py-2 mb-3"
+            />
+
+            <input
+              value={form.email}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+              className="w-full border rounded px-3 py-2 mb-3"
+            />
+
+            <input
+              defaultValue={editingCustomer.phone || ""}
+              id="edit-phone"
+              className="w-full border rounded px-3 py-2 mb-3"
+            />
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setEditingCustomer(null)}
+                className="px-3 py-2 bg-gray-300 rounded"
+              >
+                Отмена
+              </button>
+
+              <button
+                onClick={async () => {
+                  await updateCustomer({
+                    id: editingCustomer.id,
+                    ...form,
+                  });
+
+                  setEditingCustomer(null);
+                }}
+                className="px-3 py-2 bg-blue-500 text-white rounded"
+              >
+                Сохранить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
